@@ -52,8 +52,9 @@ pip install openai llama-index langchain ragas pandas numpy pyyaml tiktoken easy
 pip install llama-index-embeddings-langchain llama-index-llms-langchain
 pip install llama-index-packs-raptor matplotlib ipython
 
-# Create API keys file
-echo "OPENAI_API_KEY: your-api-key-here" > api_keys.yaml
+# Copy and configure
+cp configs/config_soybean.yaml.example configs/config_soybean.yaml
+# Edit configs/config_soybean.yaml with your actual API key
 ```
 
 **Note:** Replace `your-api-key-here` with your actual OpenAI API key.
@@ -62,22 +63,34 @@ echo "OPENAI_API_KEY: your-api-key-here" > api_keys.yaml
 
 ## ⚙️ Configuration
 
-Create a YAML config file with your environment and preferences:
+### Step 1: Copy and Configure
+
+```bash
+# Copy the example configuration file
+cp configs/config_soybean.yaml.example configs/config_soybean.yaml
+
+# Edit the config file with your API key
+# Change YOUR_OPENAI_API_KEY_HERE to your actual OpenAI API key
+```
+
+### Step 2: Your Configuration File
+
+Edit `configs/config_soybean.yaml` with your preferences:
 
 ```yaml
 model:
-  api_base: <API_BASE>
-  api_key: <API_KEY>
-  deployment_name: <LLM model name, eg. "gpt-4-turbo">
-  api_type: <Eg. "openai">
-  api_version: <Eg '2024-08-06'>
+  api_base: 
+  api_key: YOUR_OPENAI_API_KEY_HERE  # Replace with your actual API key
+  deployment_name: gpt-4o
+  api_type: openai
+  api_version: '2024-02-01'
 
 embedding_model:
-  api_base: <API_BASE>
-  api_key: <API_KEY>
-  deployment_name: <LLM embedding model name, eg. "text-embedding-ada-002">
-  api_type: <Eg. azure>
-  api_version: <Eg '2024-08-06'>
+  api_base: 
+  api_key: YOUR_OPENAI_API_KEY_HERE  # Replace with your actual API key
+  deployment_name: text-embedding-3-small
+  api_type: openai
+  api_version: '2024-02-01'
 
 data:
   documents_dir: data/md/soybean
@@ -200,8 +213,8 @@ Available methods for comparison:
 - The system gracefully handles missing Azure ML dependencies
 
 **Missing API Keys Error:**
-- Ensure `api_keys.yaml` exists with your OpenAI API key
-- Update configs with your API credentials
+- Copy example config: `cp configs/config_soybean.yaml.example configs/config_soybean.yaml`
+- Edit `configs/config_soybean.yaml` and replace `YOUR_OPENAI_API_KEY_HERE` with your actual API key
 
 **Model Not Found Errors:**
 - Update model names in configs (e.g., `gpt-4o` instead of `gpt-4-32k`)
