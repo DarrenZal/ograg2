@@ -1,7 +1,7 @@
 model:
   api_base: 
-  api_key: 
-  deployment_name: gpt-4-32k # -32k
+  api_key: YOUR_OPENAI_API_KEY_HERE
+  deployment_name: gpt-4o # -32k
   api_type: openai
   api_version: '2024-02-01' 
   # MODEL_NAME: gpt-4-32k
@@ -17,7 +17,7 @@ model:
 
 embedding_model:
   api_base: 
-  api_key: 
+  api_key: YOUR_OPENAI_API_KEY_HERE
   deployment_name: text-embedding-3-small # sentence-transformers/all-mpnet-base-v2
   api_type: openai #huggingface
   api_version: '2024-02-01' 

@@ -25,6 +25,8 @@ OG-RAG addresses traditional Retrieval-Augmented Generation (RAG) limitations by
 
 ## 🛠️ Installation
 
+### Standard Installation
+
 ```bash
 git clone https://github.com/yourusername/og-rag.git
 cd og-rag
@@ -32,6 +34,29 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+### Apple Silicon (M1/M2/M3) Installation
+
+Due to dependency conflicts with Azure ML packages on Apple Silicon, use this alternative installation:
+
+```bash
+git clone https://github.com/yourusername/og-rag.git
+cd og-rag
+python3 -m venv venv
+source venv/bin/activate
+
+# Install core packages first
+pip install openai llama-index langchain ragas pandas numpy pyyaml tiktoken easydict
+
+# Install additional LlamaIndex packages
+pip install llama-index-embeddings-langchain llama-index-llms-langchain
+pip install llama-index-packs-raptor matplotlib ipython
+
+# Create API keys file
+echo "OPENAI_API_KEY: your-api-key-here" > api_keys.yaml
+```
+
+**Note:** Replace `your-api-key-here` with your actual OpenAI API key.
 
 ---
 
@@ -94,29 +119,106 @@ evaluator:
 
 ## 🚀 Usage
 
-### Mapping Ontology and Generating Knowledge Graph
+### Quick Start Testing
 
-Map ontology only and Generate full knowledge graph (triples):
-
-```bash
-python build_knowledge_graph.py --config_file <path-to-config-file>
-```
-
-### Querying LLM
-
-Execute queries:
+Before running the full system, test basic functionality:
 
 ```bash
-python query_llm.py --config_file <path-to-config-file>
+# Activate virtual environment
+source venv/bin/activate
+
+# Test core functionality (recommended first step)
+python simple_test.py --config_file configs/config_soybean.yaml
 ```
 
-### Testing
+### Interactive Querying
 
-Run tests and evaluate model performance:
+Execute interactive queries with the OG-RAG system:
 
 ```bash
-python test_answers.py --config_file <path-to-config-file>
+python query_llm.py --config_file configs/config_soybean.yaml
 ```
+
+This launches an interactive session where you can ask questions about soybean cultivation and see how the ontology-grounded system responds.
+
+### Knowledge Graph Building
+
+Map ontology and generate knowledge graph (required before first use):
+
+```bash
+python build_knowledge_graph.py --config_file configs/config_soybean.yaml
+```
+
+### Comprehensive Evaluation
+
+Run full evaluation with RAGAS metrics:
+
+```bash
+python test_answers.py --config_file configs/config_soybean.yaml
+```
+
+### Batch Testing
+
+Run multiple methods across datasets:
+
+```bash
+# Test all methods on all datasets
+./run_all.sh
+
+# Test specific method
+./run_method.sh query gpt-4o ontohypergraph-rag
+
+# Test on specific dataset
+./run_method_dataset.sh query gpt-4o ontohypergraph-rag soybean
+```
+
+### Available Test Datasets
+
+- `soybean` - Agriculture/farming knowledge
+- `wheat` - Crop cultivation
+- `news` - General news articles  
+- `indiampop` - India population data
+
+### Query Methods
+
+Available methods for comparison:
+
+- `ontohypergraph-rag` - Main OG-RAG implementation (recommended)
+- `rag` - Traditional vector-based RAG
+- `graphrag` - Microsoft GraphRAG
+- `raptor-rag` - RAPTOR clustering-based retrieval
+- `llm` - Direct LLM querying without retrieval
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Azure ML Import Errors on Apple Silicon:**
+- Use the Apple Silicon installation method above
+- The system gracefully handles missing Azure ML dependencies
+
+**Missing API Keys Error:**
+- Ensure `api_keys.yaml` exists with your OpenAI API key
+- Update configs with your API credentials
+
+**Model Not Found Errors:**
+- Update model names in configs (e.g., `gpt-4o` instead of `gpt-4-32k`)
+- Check your OpenAI account has access to the specified models
+
+**Document Directory Missing:**
+- The system expects documents in `data/md/{dataset}/`
+- Sample documents are provided for testing
+
+**F-string Syntax Errors:**
+- These have been fixed in the codebase for Python compatibility
+
+### Getting Help
+
+1. Start with the simple test: `python simple_test.py`
+2. Check the CLAUDE.md file for development guidance
+3. Verify all dependencies are installed correctly
 
 ---
 

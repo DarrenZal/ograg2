@@ -3,12 +3,16 @@ import os
 from pathlib import Path
 from typing import List, Optional, Sequence, Tuple, Dict, Any
 
-from azureml.rag.utils.connections import (
-    get_connection_by_id_v2,
-    get_metadata_from_connection,
-    get_target_from_connection,
-    connection_to_credential,
-)
+try:
+    from azureml.rag.utils.connections import (
+        get_connection_by_id_v2,
+        get_metadata_from_connection,
+        get_target_from_connection,
+        connection_to_credential,
+    )
+    AZUREML_AVAILABLE = True
+except ImportError:
+    AZUREML_AVAILABLE = False
 
 from langchain_openai.chat_models import AzureChatOpenAI, ChatOpenAI
 from langchain_openai.embeddings import AzureOpenAIEmbeddings, OpenAIEmbeddings
@@ -30,7 +34,11 @@ import json
 import numpy as np
 import itertools
 from collections import defaultdict
-from langchain_together import ChatTogether, TogetherEmbeddings, Together
+try:
+    from langchain_together import ChatTogether, TogetherEmbeddings, Together
+    TOGETHER_AVAILABLE = True
+except ImportError:
+    TOGETHER_AVAILABLE = False
 
 MAX_TOKENS = 4096 # 12288 4096
 OPENAI_CONFIG = '/workspace/farmvibes-llm/agkgcopilot/openai.yaml'
@@ -99,8 +107,9 @@ def read_pdf_files(file_paths: List[Path], smart=True) -> List[Document]:
 
 def load_llm_and_embeds(model_config: Dict[str, Any], embedding_config: Dict[str, Any]) -> Tuple[ChatOpenAI, Embeddings]:
     try:
-        subscription_id, resource_group, workspace = get_workspace_info()
-        model_config = get_openai_connection(subscription_id, resource_group, workspace, model_config['connection_id'])
+        if AZUREML_AVAILABLE:
+            subscription_id, resource_group, workspace = get_workspace_info()
+            model_config = get_openai_connection(subscription_id, resource_group, workspace, model_config['connection_id'])
     except:
         pass
 
@@ -165,8 +174,9 @@ def load_llm_and_embeds(model_config: Dict[str, Any], embedding_config: Dict[str
 
 def create_service_context(model_config: Dict[str, Any], embedding_config: Dict[str, Any]) -> ServiceContext:
     try:
-        subscription_id, resource_group, workspace = get_workspace_info()
-        model_config = get_openai_connection(subscription_id, resource_group, workspace, model_config['connection_id'])
+        if AZUREML_AVAILABLE:
+            subscription_id, resource_group, workspace = get_workspace_info()
+            model_config = get_openai_connection(subscription_id, resource_group, workspace, model_config['connection_id'])
     except:
         pass
 
@@ -225,7 +235,11 @@ def create_service_context(model_config: Dict[str, Any], embedding_config: Dict[
         # community embeddings
         embedding_llm = HuggingFaceEmbeddings(model_name=embedding_config.deployment_name)
 
-    from llama_index.embeddings.langchain import LangchainEmbedding
+    try:
+        from llama_index.embeddings.langchain import LangchainEmbedding
+    except ImportError:
+        # Fallback for different LlamaIndex versions
+        from llama_index.core.embeddings import BaseEmbedding as LangchainEmbedding
     lc_embeddings = LangchainEmbedding(embedding_llm)
 
     service_context = _Settings(
