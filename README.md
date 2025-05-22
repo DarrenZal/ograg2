@@ -52,9 +52,17 @@ pip install openai llama-index langchain ragas pandas numpy pyyaml tiktoken easy
 pip install llama-index-embeddings-langchain llama-index-llms-langchain
 pip install llama-index-packs-raptor matplotlib ipython
 
+# Install additional dependencies for compatibility
+pip install langchain-openai langchain-community retrying
+
+# Note: GraphRAG has API compatibility issues with the current codebase
+# Skip this if you only need the main OG-RAG functionality:
+# pip install graphrag
+
 # Copy and configure
 cp configs/config_soybean.yaml.example configs/config_soybean.yaml
-# Edit configs/config_soybean.yaml with your actual API key
+cp configs/hypergrag/config_soybean.yaml.example configs/hypergrag/config_soybean.yaml
+# Edit both config files with your actual API key
 ```
 
 **Note:** Replace `your-api-key-here` with your actual OpenAI API key.
@@ -66,10 +74,11 @@ cp configs/config_soybean.yaml.example configs/config_soybean.yaml
 ### Step 1: Copy and Configure
 
 ```bash
-# Copy the example configuration file
+# Copy the example configuration files
 cp configs/config_soybean.yaml.example configs/config_soybean.yaml
+cp configs/hypergrag/config_soybean.yaml.example configs/hypergrag/config_soybean.yaml
 
-# Edit the config file with your API key
+# Edit both config files with your API key
 # Change YOUR_OPENAI_API_KEY_HERE to your actual OpenAI API key
 ```
 
@@ -132,16 +141,30 @@ evaluator:
 
 ## 🚀 Usage
 
-### Quick Start Testing
+### Quick Start Workflow
 
-Before running the full system, test basic functionality:
+Follow these steps in order for first-time setup:
 
 ```bash
 # Activate virtual environment
 source venv/bin/activate
 
-# Test core functionality (recommended first step)
+# Step 1: Test core functionality (recommended first step)
 python simple_test.py --config_file configs/config_soybean.yaml
+
+# Step 2: Build knowledge graph (required before queries)
+python build_knowledge_graph.py --config_file configs/config_soybean.yaml
+
+# Step 3: Run interactive queries or evaluations
+python query_llm.py --config_file configs/config_soybean.yaml
+```
+
+### Knowledge Graph Building
+
+**IMPORTANT: Run this first before any queries!** Map ontology and generate knowledge graph:
+
+```bash
+python build_knowledge_graph.py --config_file configs/config_soybean.yaml
 ```
 
 ### Interactive Querying
@@ -152,38 +175,52 @@ Execute interactive queries with the OG-RAG system:
 python query_llm.py --config_file configs/config_soybean.yaml
 ```
 
-This launches an interactive session where you can ask questions about soybean cultivation and see how the ontology-grounded system responds.
-
-### Knowledge Graph Building
-
-Map ontology and generate knowledge graph (required before first use):
-
-```bash
-python build_knowledge_graph.py --config_file configs/config_soybean.yaml
-```
+**Note:** For interactive mode, ensure the `questions_file` in your config is empty or commented out. If `questions_file` contains CSV files, the system runs in batch evaluation mode instead of interactive mode.
 
 ### Comprehensive Evaluation
 
-Run full evaluation with RAGAS metrics:
+**Note:** Evaluation functionality currently requires the missing `qna` module. The main OG-RAG system works without it.
 
 ```bash
-python test_answers.py --config_file configs/config_soybean.yaml
+# Currently not functional - requires missing 'qna' module
+# python test_answers.py --config_file configs/config_soybean.yaml
 ```
+
+For now, use interactive queries or batch processing with `query_llm.py` instead.
 
 ### Batch Testing
 
-Run multiple methods across datasets:
+**Note:** The batch testing scripts have limitations due to missing config files and require setup.
 
 ```bash
-# Test all methods on all datasets
-./run_all.sh
+# Test all methods on all datasets (requires proper setup)
+./run_all.sh query gpt-4o
 
-# Test specific method
-./run_method.sh query gpt-4o ontohypergraph-rag
+# Test specific method (may have missing dependencies) 
+./run_method.sh query gpt-4o hypergrag
 
-# Test on specific dataset
-./run_method_dataset.sh query gpt-4o ontohypergraph-rag soybean
+# Test on specific dataset (recommended approach)
+./run_method_dataset.sh query gpt-4o hypergrag soybean
 ```
+
+**Important: Method Names Differ Between Scripts and Configs**
+
+**For bash scripts** (run_all.sh, run_method_dataset.sh):
+- `hypergrag` - The main OG-RAG hypergraph method
+- `rag` - Traditional vector-based RAG  
+- `llm` - Direct LLM querying
+- `raptor` - RAPTOR clustering-based retrieval (requires setup)
+- `graphrag` - Microsoft GraphRAG (requires setup)
+
+**For config files** (query.method in YAML):
+- `ontohypergraph-rag` - The main OG-RAG hypergraph method
+- `rag` - Traditional vector-based RAG
+- `llm` - Direct LLM querying
+
+**Current limitations:**
+- Missing `configs/graphrag/` and `configs/raptor/` config files  
+- Some methods require additional setup beyond the basic installation
+- API keys must be configured in all relevant config files
 
 ### Available Test Datasets
 
@@ -211,6 +248,30 @@ Available methods for comparison:
 **Azure ML Import Errors on Apple Silicon:**
 - Use the Apple Silicon installation method above
 - The system gracefully handles missing Azure ML dependencies
+
+**GraphRAG Import Errors:**
+- GraphRAG 2.x has breaking API changes that are incompatible with the current codebase
+- The system works fine without GraphRAG using other methods like `ontohypergraph-rag`, `rag`, `raptor-rag`, `llm`
+- If you need GraphRAG specifically, you may need to update the integration code
+
+**Missing 'qna' Module for Evaluation:**
+- The `test_answers.py` evaluation script requires a missing `qna` module that should be part of the codebase
+- This appears to be an oversight in the repository - the evaluation framework is incomplete
+- **Consider reporting this issue to the main repository** with a message like:
+  ```
+  The evaluation functionality in test_answers.py imports from a missing 'qna.tester' module that 
+  contains AspectTester, RAGASTester, and GuidelineTester classes. This module appears to be 
+  missing from the repository, making the evaluation framework non-functional. Could you please 
+  add the missing qna/ directory or provide guidance on the evaluation setup?
+  ```
+- For now, the main OG-RAG functionality works perfectly without it
+- Use `query_llm.py` for interactive queries and batch processing instead
+
+**Bash Scripts Do Nothing / Silent Exit:**
+- If `./run_method_dataset.sh` does nothing, check you're using the correct method name
+- Use `hypergrag` for scripts, not `ontohypergraph-rag` 
+- Example: `./run_method_dataset.sh query gpt-4o hypergrag soybean` ✅
+- Not: `./run_method_dataset.sh query gpt-4o ontohypergraph-rag soybean` ❌
 
 **Missing API Keys Error:**
 - Copy example config: `cp configs/config_soybean.yaml.example configs/config_soybean.yaml`

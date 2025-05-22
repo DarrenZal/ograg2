@@ -128,7 +128,7 @@ if __name__ == '__main__':
     else:
         raise NotImplementedError(f"Query method {config.query.method} is not implemented yet.")
     
-    if len(config.query.questions_file) == 0:
+    if not config.query.questions_file or len(config.query.questions_file) == 0:
         while True:
             query = input("Type your query (press Enter to stop):")
             if query == '':

@@ -1,7 +1,9 @@
 # API Keys and Sensitive Configuration
 api_keys.yaml
 configs/config_*.yaml
+configs/*/config_*.yaml
 !configs/config_*.yaml.example
+!configs/*/config_*.yaml.example
 
 # Python
 __pycache__/

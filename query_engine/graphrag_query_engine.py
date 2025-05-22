@@ -1,4 +1,15 @@
-from graphrag.query.cli import run_local_search, run_global_search
+try:
+    from graphrag.query.cli import run_local_search, run_global_search
+    GRAPHRAG_AVAILABLE = True
+except ImportError:
+    GRAPHRAG_AVAILABLE = False
+    # Mock functions for when GraphRAG is not available
+    def run_local_search(*args, **kwargs):
+        raise ImportError("GraphRAG is not available. Please install graphrag or use a different query method.")
+    
+    def run_global_search(*args, **kwargs):
+        raise ImportError("GraphRAG is not available. Please install graphrag or use a different query method.")
+
 from llama_index.core.retrievers import VectorIndexRetriever
 from langchain_core.embeddings import Embeddings
 from langchain_core.language_models import BaseLanguageModel

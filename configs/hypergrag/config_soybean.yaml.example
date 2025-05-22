@@ -1,6 +1,6 @@
 model:
   api_base: 
-  api_key: 
+  api_key: YOUR_OPENAI_API_KEY_HERE
   # api_base: 
   # api_key: 
   # deployment_name: gpt-35-turbo-16k # -32k
@@ -21,7 +21,7 @@ model:
 
 embedding_model:
   api_base: 
-  api_key: 
+  api_key: YOUR_OPENAI_API_KEY_HERE
   # api_base: 
   # api_key: 
   deployment_name: text-embedding-3-small # sentence-transformers/all-mpnet-base-v2

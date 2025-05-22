@@ -17,7 +17,7 @@ model:
 
 embedding_model:
   api_base: 
-  api_key: YOUR_OPENAI_API_KEY_HERE
+  api_key: YOUR_OPENAI_API_KEY_HERE 
   deployment_name: text-embedding-3-small # sentence-transformers/all-mpnet-base-v2
   api_type: openai #huggingface
   api_version: '2024-02-01' 
@@ -43,7 +43,7 @@ query:
     # - data/md/soybean/questions/ragas/testset_10_0p25,0p5,0p25.csv 
     # - data/md/soybean/questions/ragas/testset_10_0p25,0p25,0p5.csv 
     # - data/md/soybean/questions/ragas/testset_10_1p0,0p0,0p0.csv
-    - data/kg/soybean/questions/ontodoc_ragas/testset_reasoning.csv
+    # - data/kg/soybean/questions/ontodoc_ragas/testset_reasoning.csv  # Comment out for interactive mode
   answers_file: results/soybean/ragas_answers_ontohypergraphrag.json
 
 question_generator:
