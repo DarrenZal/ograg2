@@ -218,9 +218,11 @@ For now, use interactive queries or batch processing with `query_llm.py` instead
 - `llm` - Direct LLM querying
 
 **Current limitations:**
-- Missing `configs/graphrag/` and `configs/raptor/` config files  
-- Some methods require additional setup beyond the basic installation
+- Missing `configs/graphrag/` and `configs/raptor/` config files - **this appears to be missing from the upstream repository**
+- Some methods require additional setup beyond the basic installation  
 - API keys must be configured in all relevant config files
+
+**If you need RAPTOR or GraphRAG functionality**, please report this missing configuration issue to the original OG-RAG repository.
 
 ### Available Test Datasets
 
